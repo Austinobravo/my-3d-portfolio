@@ -1,9 +1,10 @@
 'use client'
 
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Html } from '@react-three/drei'
 import { Group, Mesh, TextureLoader, CanvasTexture } from 'three'
+import EarthAtmosphere from './EarthAtmosphere'
 
 interface PlanetProps {
   name: string
@@ -19,6 +20,7 @@ interface PlanetProps {
   hasRings?: boolean
   ringColor?: string
   onSelect: (name: string, targetMesh: Mesh) => void
+  onRegister?: (name: string, targetMesh: Mesh) => void // Registers mesh immediately on mount
 }
 
 function createFallbackTexture(primaryColor: string, secondaryColor: string): CanvasTexture {
@@ -66,9 +68,17 @@ export default function Planet({
   hasRings = false,
   ringColor = '#c2b280',
   onSelect,
+  onRegister,
 }: PlanetProps) {
   const orbitRef = useRef<Group>(null!)
   const planetRef = useRef<Mesh>(null!)
+
+  // Register mesh immediately after first frame render
+  useEffect(() => {
+    if (planetRef.current && onRegister) {
+      onRegister(name, planetRef.current)
+    }
+  }, [name, onRegister])
 
   const textureMap = useMemo(() => {
     if (!textureUrl) return createFallbackTexture(baseColor, secondaryColor)
@@ -96,28 +106,21 @@ export default function Planet({
     onSelect(name, planetRef.current)
   }
 
-  // Closer planets reflect glare more intensely
   const roughnessValue = distanceFromSun < 8 ? 0.4 : 0.8
   const metalnessValue = distanceFromSun < 8 ? 0.1 : 0.0
 
   return (
     <group ref={orbitRef}>
-      {/* Orbit Track Line */}
       <mesh rotation-x={Math.PI / 2}>
         <ringGeometry args={[distanceFromSun - 0.03, distanceFromSun + 0.03, 64]} />
         <meshBasicMaterial color="#ffffff" opacity={isSelected ? 0.4 : 0.08} transparent />
       </mesh>
 
-      {/* Planet Body */}
       <mesh ref={planetRef} position={[distanceFromSun, 0, 0]} onClick={handleClick}>
         <sphereGeometry args={[size, 64, 64]} />
-        <meshStandardMaterial
-          map={textureMap}
-          roughness={roughnessValue}
-          metalness={metalnessValue}
-        />
+        <meshStandardMaterial map={textureMap} roughness={roughnessValue} metalness={metalnessValue} />
+        {/* {name === 'Earth' && <EarthAtmosphere radius={size} />} */}
 
-        {/* Label */}
         <Html distanceFactor={28} position={[0, size + 0.5, 0]} center>
           <div
             className={`pointer-events-none rounded px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-md transition-all ${
@@ -128,7 +131,6 @@ export default function Planet({
           </div>
         </Html>
 
-        {/* Saturn / Uranus Rings receiving lights */}
         {hasRings && (
           <mesh rotation-x={Math.PI / 2.5}>
             <ringGeometry args={[size * 1.3, size * 2.2, 64]} />

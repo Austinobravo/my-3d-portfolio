@@ -8,53 +8,61 @@ export default function Sun() {
   const innerGlowRef = useRef<Mesh>(null!)
   const outerGlowRef = useRef<Mesh>(null!)
 
-  useFrame((_, delta) => {
-    // Gentle pulse effect for outer atmospheric glow
+  useFrame((state, delta) => {
+    // Continuous rotation for atmosphere layers
     if (outerGlowRef.current) {
       outerGlowRef.current.rotation.y += delta * 0.02
+      
+      // Dynamic breathing scale effect on the outer glow
+      const pulse = 2.1 + Math.sin(state.clock.elapsedTime * 1.5) * 0.05
+      outerGlowRef.current.scale.setScalar(pulse)
+    }
+
+    if (innerGlowRef.current) {
+      innerGlowRef.current.rotation.y -= delta * 0.03
     }
   })
 
   return (
     <group position={[0, 0, 0]}>
-      {/* 1. High-Power Point Light - Radiates natural sunlight across space */}
+      {/* 1. Point Light - Warm white light shining across space */}
       <pointLight
-        intensity={20}
-        distance={200}
+        intensity={22}
+        distance={250}
         decay={1.2}
-        color={new Color('#fff8e7')}
+        color={new Color('#fffdfa')}
       />
 
-      {/* 2. White-Hot Core Sphere */}
+      {/* 2. True-to-Life White-Hot Core Sphere */}
       <mesh>
         <sphereGeometry args={[2.2, 64, 64]} />
         <meshBasicMaterial color="#ffffff" />
       </mesh>
 
-      {/* 3. Golden Surface Flare Layer */}
-      <mesh scale={1.05}>
+      {/* 3. Golden Surface Atmosphere Layer */}
+      <mesh scale={1.03}>
         <sphereGeometry args={[2.2, 32, 32]} />
-        <meshBasicMaterial color="#ffcc33" transparent opacity={0.85} />
+        <meshBasicMaterial color="#ffd043" transparent opacity={0.7} />
       </mesh>
 
       {/* 4. Warm Radial Atmospheric Halo (Inner Glow) */}
-      {/* <mesh ref={innerGlowRef} scale={1.4}>
+      {/* <mesh ref={innerGlowRef} scale={1.35}>
         <sphereGeometry args={[2.2, 32, 32]} />
         <meshBasicMaterial
-          color="#ffaa00"
+          color="#ff9900"
           transparent
-          opacity={0.35}
+          opacity={0.3}
           side={2}
         />
       </mesh> */}
 
-      {/* 5. Volumetric Soft Corona (Outer Glow) */}
+      {/* 5. Volumetric Soft Corona (Outer Pulsing Glow) */}
       {/* <mesh ref={outerGlowRef} scale={2.1}>
         <sphereGeometry args={[2.2, 32, 32]} />
         <meshBasicMaterial
-          color="#ff6600"
+          color="#ff5500"
           transparent
-          opacity={0.12}
+          opacity={0.15}
           side={2}
         />
       </mesh> */}
