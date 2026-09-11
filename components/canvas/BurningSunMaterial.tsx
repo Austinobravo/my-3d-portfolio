@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { shaderMaterial } from '@react-three/drei'
-import { extend } from '@react-three/fiber'
+import { extend, ThreeElement } from '@react-three/fiber'
 
 export const BurningSunMaterial = shaderMaterial(
   {
@@ -98,10 +98,16 @@ export const BurningSunMaterial = shaderMaterial(
 
 extend({ BurningSunMaterial })
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      burningSunMaterial: any
-    }
+// declare global {
+//   namespace JSX {
+//     interface IntrinsicElements {
+//       burningSunMaterial: any
+//     }
+//   }
+// }
+
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    burningSunMaterial: ThreeElement<typeof BurningSunMaterial>
   }
 }

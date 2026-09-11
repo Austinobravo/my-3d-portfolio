@@ -1,7 +1,7 @@
 'use client'
 
 import { shaderMaterial } from '@react-three/drei'
-import { extend } from '@react-three/fiber'
+import { extend, ThreeElement } from '@react-three/fiber'
 import * as THREE from 'three'
 
 export const AtmosphereMaterial = shaderMaterial(
@@ -28,11 +28,17 @@ export const AtmosphereMaterial = shaderMaterial(
 
 extend({ AtmosphereMaterial })
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      atmosphereMaterial: any
-    }
+// declare global {
+//   namespace JSX {
+//     interface IntrinsicElements {
+//       atmosphereMaterial: any
+//     }
+//   }
+// }
+
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    atmosphereMaterial: ThreeElement<typeof AtmosphereMaterial>
   }
 }
 

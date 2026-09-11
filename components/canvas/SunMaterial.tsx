@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { shaderMaterial } from '@react-three/drei'
-import { extend } from '@react-three/fiber'
+import { extend, ThreeElement } from '@react-three/fiber'
 
 // Custom GLSL Shader for procedural solar flares & pulsating surface texture
 export const SunShaderMaterial = shaderMaterial(
@@ -47,10 +47,15 @@ export const SunShaderMaterial = shaderMaterial(
 extend({ SunShaderMaterial })
 
 // TypeScript declaration for JSX tag recognition
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      sunShaderMaterial: any
+
+declare module "@react-three/fiber"{
+    interface ThreeElements{
+        sunShaderMaterial: ThreeElement<typeof SunShaderMaterial>
     }
-  }
 }
+
+// declare module '@react-three/fiber' {
+//   interface ThreeElements {
+//     burningSunMaterial: ThreeElement<typeof BurningSunMaterial>
+//   }
+// }
