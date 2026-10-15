@@ -2,6 +2,12 @@
   "name": "my-3d-portfolio",
   "version": "0.1.0",
   "private": true,
+  "browserslist": [
+    "chrome >= 80",
+    "safari >= 14",
+    "ios_saf >= 14",
+    "defaults"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
